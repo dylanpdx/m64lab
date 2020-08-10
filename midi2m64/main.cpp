@@ -2,7 +2,6 @@
 #include "midi/inc/Options.h"
 #include <iostream>
 #include <vector>
-#include <string>
 #include <fstream>
 #include <stdio.h>
 #include <math.h>
@@ -1231,7 +1230,7 @@ void press_enter_to_continue()
 }
 
 
-extern "C" __declspec(dllexport) bool convertMidi(string filename,string out_filename)
+extern "C" __declspec(dllexport) bool convertMidi(char* filename,char* out_filename)
 {
 	int cur_track;
 	int cur_event;
@@ -1545,7 +1544,7 @@ extern "C" __declspec(dllexport) bool convertMidi(string filename,string out_fil
 	
 	m64.clear();
 	m64 = seq.create_m64();
-	remove(out_filename.c_str());
+	remove(out_filename);
 	output.open(out_filename, ios::out | ios::binary);
 	output.write((const char*)&m64[0], m64.size());
 	output.close();
