@@ -17,10 +17,6 @@ using namespace std;
 //     + Build midi parsing into seq class
 //     + Add UI  
 
-#ifndef _NDEBUG
-#define DEBUG_MIDI_FILE "" //"LastImpactElectro.mid"
-#endif
-
 #define NOTE_BIAS 21
 
 #define NOTE_GROUP_MAX_GAP 288
@@ -1235,10 +1231,8 @@ void press_enter_to_continue()
 }
 
 
-int main(int _argc, char** _argv)
+extern "C" __declspec(dllexport) int convertMidi(string filename,string out_filename)
 {
-	string filename;
-	string out_filename;
 	int cur_track;
 	int cur_event;
 	int i;
@@ -1253,24 +1247,6 @@ int main(int _argc, char** _argv)
 	vector<uchar> m64;
 	fstream output;
 	MidiFile midifile;
-
-#ifdef _NDEBUG
-	Options options;
-#endif
-
-#ifdef _NDEBUG
-	options.process(_argc, _argv);
-	if (options.getArgCount() != 1 && options.getArgCount() != 2)
-	{
-		cerr << "You must specify exactly one MIDI file, or MIDI file & output m64 name.\n";
-		return 1;
-	}
-	filename = options.getArg(1);
-	if (options.getArgCount() == 2)
-		out_filename = options.getArg(2);
-#else
-	filename = DEBUG_MIDI_FILE;
-#endif
 
 	midifile.read(filename);
 	if (!midifile.status())
@@ -1569,14 +1545,6 @@ int main(int _argc, char** _argv)
 	
 	m64.clear();
 	m64 = seq.create_m64();
-#ifdef _NDEBUG
-	if (options.getArgCount() != 2) {
-#endif
-		out_filename = filename.substr(0, filename.find_last_of("."));
-		out_filename += ".m64";
-#ifdef _NDEBUG
-	}
-#endif
 	remove(out_filename.c_str());
 	output.open(out_filename, ios::out | ios::binary);
 	output.write((const char*)&m64[0], m64.size());
