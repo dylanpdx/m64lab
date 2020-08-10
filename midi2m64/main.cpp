@@ -1260,12 +1260,14 @@ int main(int _argc, char** _argv)
 
 #ifdef _NDEBUG
 	options.process(_argc, _argv);
-	if (options.getArgCount() != 1) 
+	if (options.getArgCount() != 1 && options.getArgCount() != 2)
 	{
-		cerr << "You must specify exactly one MIDI file.\n";
+		cerr << "You must specify exactly one MIDI file, or MIDI file & output m64 name.\n";
 		return 1;
 	}
 	filename = options.getArg(1);
+	if (options.getArgCount() == 2)
+		out_filename = options.getArg(2);
 #else
 	filename = DEBUG_MIDI_FILE;
 #endif
@@ -1567,9 +1569,14 @@ int main(int _argc, char** _argv)
 	
 	m64.clear();
 	m64 = seq.create_m64();
-	
-	out_filename = filename.substr(0, filename.find_last_of("."));
-	out_filename += ".m64";
+#ifdef _NDEBUG
+	if (options.getArgCount() != 2) {
+#endif
+		out_filename = filename.substr(0, filename.find_last_of("."));
+		out_filename += ".m64";
+#ifdef _NDEBUG
+	}
+#endif
 	remove(out_filename.c_str());
 	output.open(out_filename, ios::out | ios::binary);
 	output.write((const char*)&m64[0], m64.size());
