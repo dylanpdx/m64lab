@@ -1397,6 +1397,9 @@ int main(int _argc, char** _argv)
 						midifile[cur_track][cur_event][1])
 					);
 				break;
+			case 0xC0: // MIDI "Program Change" event
+				new_track.instrument = midifile[cur_track][cur_event][1];
+				break;
 			}
 		}
 		previous_size = seq.sources.size();
@@ -1423,7 +1426,6 @@ int main(int _argc, char** _argv)
 					new_track.volume_source = i;
 				}
 			}
-			new_track.instrument = seq.tracks.size();
 			seq.tracks.push_back(new_track);
 		}
 	}
