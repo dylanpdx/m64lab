@@ -1231,7 +1231,7 @@ void press_enter_to_continue()
 }
 
 
-extern "C" __declspec(dllexport) int convertMidi(string filename,string out_filename)
+extern "C" __declspec(dllexport) bool convertMidi(string filename,string out_filename)
 {
 	int cur_track;
 	int cur_event;
@@ -1252,7 +1252,7 @@ extern "C" __declspec(dllexport) int convertMidi(string filename,string out_file
 	if (!midifile.status())
 	{
 		cerr << "Error reading MIDI file " << filename << endl;
-		return 1;
+		return false;
 	}
 
 	midifile.linkNotePairs();
@@ -1551,5 +1551,5 @@ extern "C" __declspec(dllexport) int convertMidi(string filename,string out_file
 	output.close();
 	
 
-	return 0;
+	return true;
 }
