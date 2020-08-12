@@ -807,10 +807,10 @@ public:
 
 		fine_pitch_scaling = source_fine_pitch_range / 12.0;
 		vibrato_scaling = source_vibrato_range / 12.0;
-
-		ADD(0xD3);									
+#pragma region Header
+		ADD(0xD3); // Sequence Type?
 		ADD((unsigned char)bank);					
-		ADD(0xD7);									
+		ADD(0xD7); // Enabled channels bitmask (each channel represents 1 bit)							
 		ADD_W(bit_mask_from_value[tracks.size() - 1]);	
 													
 		for (i = 0; i < tracks.size(); i++)			
@@ -819,14 +819,14 @@ public:
 			ADD_W(0x0000);
 			track_pointers.push_back(m64.size() - 2);
 		}
-		ADD(0xDB);									
+		ADD(0xDB); // Master Volume
 		ADD(volume * 100.0); // NO CLUE WHAT THIS NUMBER ACTUALLY IS
 
 		if (tempo_source == PARAM_SOURCE_NONE)		
 		{											
-			ADD(0xDD);								
+			ADD(0xDD); // Tempo BPM
 			ADD(0x78);		
-			ADD(0xFD);
+			ADD(0xFD); // Timestamp (ticks)
 			ADD_V(total_ticks);
 		}
 		else
@@ -839,25 +839,25 @@ public:
 				tick = sources[tempo_source].events[i].ticks;
 				if (tick > 0)
 				{
-					ADD(0xFD);
+					ADD(0xFD); // timestamp (Ticks)
 					ADD_V(tick - last_tick);
 				}
-				ADD(0xDD);
+				ADD(0xDD); // Tempo BPM
 				ADD((uchar)(sources[tempo_source].get(i) * 255.0));
 				last_tick = tick;
 			}
 			if (last_tick != total_ticks)
 			{
-				ADD(0xFD);
+				ADD(0xFD); // timestamp (ticks)
 				ADD_V(total_ticks - last_tick);
 			}
 		}
 
-		ADD(0xFF);
-
+		ADD(0xFF); // end of header
+#pragma endregion Header
 		for (i = 0; i < tracks.size(); i++)
 		{
-			ADD(0xC4);
+			ADD(0xC4); // Beginning of track data
 			*((short*) &(m64[track_pointers[i]])) = rev_short(m64.size() - 1);
 			ADD(0x90);
 			ADD_W(0x0000);
